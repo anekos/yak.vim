@@ -7,7 +7,9 @@ let s:yak_window = 0
 let s:yak_last = ''
 
 
-let g:yak_options = '-GA' " MY
+if !exists('g:yak_options')
+  let g:yak_options = '-GAD' " MY
+endif
 
 
 function! s:show_yak(text)
