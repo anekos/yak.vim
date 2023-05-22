@@ -64,7 +64,7 @@ function! yak#translate(text, bang)
     return
   endif
 
-  let l:yakked = system('yak ' . g:yak_options . ' ' . shellescape(l:text))
+  let l:yakked = system('yak ' . g:yak_options . ' -- ' . shellescape(l:text))
   if a:bang
     call s:append(l:yakked)
   else
