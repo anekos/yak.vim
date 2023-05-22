@@ -12,7 +12,7 @@ if !exists('g:yak_options')
 endif
 
 
-function! s:show_yak(text)
+function! s:show_yak_by_popup(text)
   if s:yak_window != 0
     call popup_close(s:yak_window)
   endif
@@ -25,6 +25,22 @@ function! s:show_yak(text)
     " \   'border': [1, 1, 1, 1],
 endfunction
 
+function! s:show_yak_by_echo(text)
+  echo a:text
+endfunction
+
+function! s:show_yak(text)
+  if has('popupwin')
+    call s:show_yak_by_popup(a:text)
+  else
+    call s:show_yak_by_echo(a:text)
+  endif
+endfunction
+
+function! s:append(text)
+  call append('%', split(a:text, '\n'))
+endfunction
+
 function! yak#show_last()
   if s:yak_last == ''
     call s:show_yak('EMPTY')
@@ -33,12 +49,25 @@ function! yak#show_last()
   endif
 endfunction
 
-function! yak#translate(text)
+function! yak#translate(text, bang)
   if 0 < len(a:text)
     let l:text = a:text
   else
     let l:text = s:VimBuffer.get_last_selected()
   endif
+
+  call systemlist('notify-send -u low ' . shellescape(l:text))
+
+  let l:text = trim(l:text)
+  if l:text == ''
+    echoerr 'Empty text'
+    return
+  endif
+
   let l:yakked = system('yak ' . g:yak_options . ' ' . shellescape(l:text))
-  call s:show_yak(l:yakked)
+  if a:bang
+    call s:append(l:yakked)
+  else
+    call s:show_yak(l:yakked)
+  endif
 endfunction
