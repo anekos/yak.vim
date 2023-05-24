@@ -56,7 +56,7 @@ function! yak#translate(text, bang)
     let l:text = s:VimBuffer.get_last_selected()
   endif
 
-  call systemlist('notify-send -u low ' . shellescape(l:text))
+  " call systemlist('notify-send -u low ' . shellescape(l:text))
 
   let l:text = trim(l:text)
   if l:text == ''
