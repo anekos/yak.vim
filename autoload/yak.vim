@@ -33,12 +33,16 @@ function! s:show_yak(text)
   if has('popupwin')
     call s:show_yak_by_popup(a:text)
   else
-    call s:show_yak_by_echo(a:text)
+    if has('nvim')
+      call yak#nvim#popup(a:text)
+    else
+      call s:show_yak_by_echo(a:text)
+    endif
   endif
 endfunction
 
 function! s:append(text)
-  call append('%', split(a:text, '\n'))
+  call append('.', split(a:text, '\n'))
 endfunction
 
 function! yak#show_last()
