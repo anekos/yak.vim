@@ -1,8 +1,3 @@
-
-let s:V = vital#of('yak')
-let s:VimBuffer = s:V.import('Vim.Buffer')
-
-
 let s:yak_window = 0
 let s:yak_last = ''
 
@@ -38,7 +33,35 @@ function! s:show_yak(text)
 endfunction
 
 function! s:append(text)
-  call append('%', split(a:text, '\n'))
+  call append('.', split(a:text, '\n'))
+endfunction
+
+function! s:get_selected_text() abort
+  let l:start_line = line("'<")
+  let l:end_line = line("'>")
+  let l:start_col = col("'<")
+  let l:end_col = col("'>")
+
+  if l:start_line == l:end_line
+    let l:line = getline(l:start_line)
+    return strpart(l:line, l:start_col - 1, l:end_col - l:start_col + 1)
+  endif
+
+  let l:text = strpart(getline(l:start_line), l:start_col - 1) . "\n"
+  for l:line in range(l:start_line + 1, l:end_line - 1)
+    let l:text .= getline(l:line) . "\n"
+  endfor
+  let l:text .= strpart(getline(l:end_line), 0, l:end_col)
+
+  return l:text
+endfunction
+
+function! s:replace_selected_text(text)
+    let l:save_reg = @"
+    normal! gvy
+    normal! ci"
+    execute 'normal! a' . a:text
+    let @" = l:save_reg
 endfunction
 
 function! yak#show_last()
@@ -53,7 +76,7 @@ function! yak#translate(text, bang)
   if 0 < len(a:text)
     let l:text = a:text
   else
-    let l:text = s:VimBuffer.get_last_selected()
+    let l:text = s:get_selected_text()
   endif
 
   " call systemlist('notify-send -u low ' . shellescape(l:text))
